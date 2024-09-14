@@ -35,6 +35,7 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <p id="modal-text"></p>
+            <p id="modal-tags"></p>
         </div>
     </div>
 
@@ -50,7 +51,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("modal-text").textContent = data.response;
+                document.getElementById("modal-text").textContent = data.response.story;
+                document.getElementById("modal-tags").textContent = data.response.tags;
                 const modal = document.getElementById("myModal");
                 modal.style.display = "block";
                 const closeButton = document.querySelector(".close-button");

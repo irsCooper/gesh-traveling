@@ -19,10 +19,13 @@ class InputData(BaseModel):
 
 @app.post("/generate_tags")
 async def generate_tags(input_data: InputData):
+    return await private_generate_tags(input_data.text)
+
+async def private_generate_tags(text:str):
     url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
     key = await get_auth_key()
-    story = await generate_story(input_data.text)
+    story = await generate_story(text)
 
     payload = json.dumps({
         "model": "GigaChat",
@@ -44,6 +47,7 @@ async def generate_tags(input_data: InputData):
     response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
     tags = json.loads(response.text)['choices'][0]['message']['content']
+    print({"story": story, "tags": tags})
     return {"story": story, "tags": tags}
 
 
@@ -96,8 +100,10 @@ def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/submit")
-def submit(data: InputData):
-    response_text = f"You entered: {data.text}"
+async def submit(data: InputData):
+    print(data)
+    response_text = await private_generate_tags(data.text)
+    print(response_text)
     return {"response": response_text}
 
 
